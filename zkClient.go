@@ -97,6 +97,29 @@ func (client *zkClient) RegisterNode(path string, ip string) error {
 	return nil
 }
 
+func (client *zkClient) GetRegisteredIps(path string) ([]string, error) {
+	children, _, err := client.conn.Children(path)
+
+	if err != nil {
+		grpclog.Errorf("Failed to get nodes: %v", err)
+		return nil, err
+	}
+
+	var ips []string
+	for _, node := range children {
+		val, _, err := client.conn.Get(path + "/" + node)
+
+		if err != nil {
+			grpclog.Errorf("Failed to get node value: %v", err)
+			return nil, err
+		}
+
+		ips = append(ips, string(val))
+	}
+
+	return ips, nil
+}
+
 func (client *zkClient) keepalive(ctx context.Context, path string, ip string) {
 	ticker := time.NewTicker(time.Second)
 
