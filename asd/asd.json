@@ -1,0 +1,14 @@
+{
+	"something": "alma",
+	"Networks": [
+		{
+			"NetworkMode": "awsvpc",
+			"alma": "asd",
+			"IPv4Addresses": ["123.123.123.123", "234.234.234.234"]
+		},
+		{
+			"asd": "dsa"
+		}
+	]
+}
+
