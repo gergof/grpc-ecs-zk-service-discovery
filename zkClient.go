@@ -12,9 +12,8 @@ import (
 
 type zkClient struct {
 	sync.RWMutex
-	conn       *zk.Conn
-	canceler   map[string]context.CancelFunc
-	registered map[string]string
+	conn     *zk.Conn
+	canceler map[string]context.CancelFunc
 }
 
 func newZkClient(servers []string, timeout int) (*zkClient, error) {
@@ -31,9 +30,8 @@ func newZkClient(servers []string, timeout int) (*zkClient, error) {
 	grpclog.Infof("Connected to ZooKeeper client")
 
 	client := &zkClient{
-		conn:       conn,
-		canceler:   make(map[string]context.CancelFunc),
-		registered: make(map[string]string),
+		conn:     conn,
+		canceler: make(map[string]context.CancelFunc),
 	}
 	return client, nil
 }
@@ -103,7 +101,6 @@ func (client *zkClient) RegisterNode(path string, ip string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	client.Lock()
 	client.canceler[nodeId] = cancel
-	client.registered[ip] = nodeId
 	client.Unlock()
 
 	client.keepalive(ctx, path, ip)
@@ -133,11 +130,6 @@ func (client *zkClient) GetRegisteredIps(path string) ([]string, error) {
 		if err != nil {
 			grpclog.Errorf("Failed to get node value: %v", err)
 			return nil, err
-		}
-
-		if client.registered[string(val)] != "" {
-			// self registered, should skip
-			continue
 		}
 
 		ips = append(ips, string(val))
