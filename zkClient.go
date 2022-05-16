@@ -16,7 +16,7 @@ type zkClient struct {
 	canceler map[string]context.CancelFunc
 }
 
-func NewZkClient(servers []string, timeout int) (*zkClient, error) {
+func newZkClient(servers []string, timeout int) (*zkClient, error) {
 	if timeout == 0 {
 		timeout = 5
 	}

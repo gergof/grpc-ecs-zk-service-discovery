@@ -26,7 +26,7 @@ func NewEcsZkServiceDiscovery(zkServers []string, zkTimeout int, registrationPat
 		schema = "zk"
 	}
 
-	zkClient, err := NewZkClient(zkServers, zkTimeout)
+	zkClient, err := newZkClient(zkServers, zkTimeout)
 
 	if err != nil {
 		return nil, err
