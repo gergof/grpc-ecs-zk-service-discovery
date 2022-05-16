@@ -126,7 +126,7 @@ func (sd *EcsZkDiscovery) Unregister() {
 }
 
 func (sd *EcsZkDiscovery) RegisterResolver() {
-	resolver.Register(&zkResolver{
+	resolver.Register(&zkResolverBuilder{
 		scheme: sd.schema,
 		zk:     sd.zk,
 	})

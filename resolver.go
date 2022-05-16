@@ -7,8 +7,12 @@ import (
 	"sync"
 )
 
+type zkResolverBuilder struct {
+	scheme string
+	zk     *zkClient
+}
+
 type zkResolver struct {
-	scheme      string
 	zk          *zkClient
 	path        string
 	clientConn  resolver.ClientConn
@@ -16,9 +20,7 @@ type zkResolver struct {
 	wg          sync.WaitGroup
 }
 
-func (r *zkResolver) Build(target resolver.Target, clientConn resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
-	r.clientConn = clientConn
-
+func (b *zkResolverBuilder) Build(target resolver.Target, clientConn resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
 	targetPath, _, err := net.SplitHostPort(target.URL.Path)
 
 	if err != nil {
@@ -27,7 +29,11 @@ func (r *zkResolver) Build(target resolver.Target, clientConn resolver.ClientCon
 
 	fmt.Printf("TARGET PATH: %v", targetPath)
 
-	r.path = targetPath
+	r := &zkResolver{
+		zk:         b.zk,
+		clientConn: clientConn,
+		path:       targetPath,
+	}
 
 	err = r.startWatch()
 
@@ -36,6 +42,10 @@ func (r *zkResolver) Build(target resolver.Target, clientConn resolver.ClientCon
 	}
 
 	return r, nil
+}
+
+func (b *zkResolverBuilder) Scheme() string {
+	return b.scheme
 }
 
 func (r *zkResolver) startWatch() error {
@@ -66,10 +76,6 @@ func (r *zkResolver) startWatch() error {
 	}()
 
 	return nil
-}
-
-func (r *zkResolver) Scheme() string {
-	return r.scheme
 }
 
 func (r *zkResolver) ResolveNow(opts resolver.ResolveNowOptions) {
