@@ -3,18 +3,19 @@ package ZookeeperServiceDiscovery
 import (
 	"encoding/json"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/resolver"
 	"io"
 	"net/http"
 	"os"
 )
 
-type ecsZkDiscovery struct {
+type EcsZkDiscovery struct {
 	zk     *zkClient
 	schema string
 	path   string
 }
 
-func NewEcsZkServiceDiscovery(zkServers []string, zkTimeout int, registrationPath string, args ...string) (*ecsZkDiscovery, error) {
+func NewEcsZkServiceDiscovery(zkServers []string, zkTimeout int, registrationPath string, args ...string) (*EcsZkDiscovery, error) {
 	var schema string
 	if len(args) > 0 {
 		schema = args[0]
@@ -28,7 +29,7 @@ func NewEcsZkServiceDiscovery(zkServers []string, zkTimeout int, registrationPat
 		return nil, err
 	}
 
-	sd := &ecsZkDiscovery{
+	sd := &EcsZkDiscovery{
 		zk:     zkClient,
 		schema: schema,
 		path:   registrationPath,
@@ -37,7 +38,7 @@ func NewEcsZkServiceDiscovery(zkServers []string, zkTimeout int, registrationPat
 	return sd, nil
 }
 
-func (sd *ecsZkDiscovery) RegisterService() error {
+func (sd *EcsZkDiscovery) RegisterService() error {
 	metadataEndpoint, isEcs := os.LookupEnv("ECS_CONTAINER_METADATA_URI_V4")
 
 	if !isEcs {
@@ -96,6 +97,14 @@ func (sd *ecsZkDiscovery) RegisterService() error {
 	return sd.zk.RegisterNode(sd.path, ip)
 }
 
-func (sd *ecsZkDiscovery) Unregister() {
+func (sd *EcsZkDiscovery) Unregister() {
 	sd.zk.Close()
+}
+
+func (sd *EcsZkDiscovery) RegisterResolver() {
+	resolver.Register(&zkResolver{
+		scheme: sd.schema,
+		zk:     sd.zk,
+		path:   sd.path,
+	})
 }
