@@ -129,6 +129,5 @@ func (sd *EcsZkDiscovery) RegisterResolver() {
 	resolver.Register(&zkResolver{
 		scheme: sd.schema,
 		zk:     sd.zk,
-		path:   sd.path,
 	})
 }

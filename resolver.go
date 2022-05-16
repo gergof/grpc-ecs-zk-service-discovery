@@ -1,7 +1,9 @@
 package ZookeeperServiceDiscovery
 
 import (
+	"fmt"
 	"google.golang.org/grpc/resolver"
+	"net"
 	"sync"
 )
 
@@ -17,7 +19,17 @@ type zkResolver struct {
 func (r *zkResolver) Build(target resolver.Target, clientConn resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
 	r.clientConn = clientConn
 
-	err := r.startWatch()
+	targetPath, _, err := net.SplitHostPort(target.URL.Path)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse path: %v", err)
+	}
+
+	fmt.Printf("TARGET PATH: %v", targetPath)
+
+	r.path = targetPath
+
+	err = r.startWatch()
 
 	if err != nil {
 		return nil, err
