@@ -36,7 +36,7 @@ func TestWithMetadataResponse(t *testing.T, metadata string) {
 
 	err = sd.RegisterService(41500)
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(50 * time.Millisecond)
 
 	if err != nil {
 		t.Errorf("expected err to be nil got %v", err)
