@@ -34,7 +34,7 @@ func TestWithMetadataResponse(t *testing.T, metadata string) {
 		return
 	}
 
-	err = sd.RegisterService(41500)
+	err = sd.RegisterService("41500")
 
 	time.Sleep(50 * time.Millisecond)
 

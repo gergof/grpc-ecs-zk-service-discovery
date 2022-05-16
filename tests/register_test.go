@@ -26,7 +26,7 @@ func Test_RegisterWithoutECS(t *testing.T) {
 		return
 	}
 
-	err = sd.RegisterService(41500)
+	err = sd.RegisterService("41500")
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -72,7 +72,7 @@ func Test_RegisterWithManualIP(t *testing.T) {
 		return
 	}
 
-	err = sd.RegisterService(41500, "192.0.2.10")
+	err = sd.RegisterService("41500", "192.0.2.10")
 
 	time.Sleep(50 * time.Millisecond)
 

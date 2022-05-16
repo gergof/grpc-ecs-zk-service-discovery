@@ -41,7 +41,7 @@ func NewEcsZkServiceDiscovery(zkServers []string, zkTimeout int, registrationPat
 	return sd, nil
 }
 
-func (sd *EcsZkDiscovery) RegisterService(port int, args ...string) error {
+func (sd *EcsZkDiscovery) RegisterService(port string, args ...string) error {
 	metadataEndpoint, isEcs := os.LookupEnv("ECS_CONTAINER_METADATA_URI_V4")
 
 	var ip string
@@ -118,7 +118,7 @@ func (sd *EcsZkDiscovery) RegisterService(port int, args ...string) error {
 		return errors.New("Could not get public IP address")
 	}
 
-	return sd.zk.RegisterNode(sd.path, fmt.Sprintf("%s:%d", ip, port))
+	return sd.zk.RegisterNode(sd.path, fmt.Sprintf("%s:%s", ip, port))
 }
 
 func (sd *EcsZkDiscovery) Unregister() {
