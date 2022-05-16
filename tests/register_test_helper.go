@@ -34,7 +34,7 @@ func TestWithMetadataResponse(t *testing.T, metadata string) {
 		return
 	}
 
-	err = sd.RegisterService()
+	err = sd.RegisterService(41500)
 
 	time.Sleep(2 * time.Second)
 
@@ -54,8 +54,8 @@ func TestWithMetadataResponse(t *testing.T, metadata string) {
 
 	val, _, _ := conn.Get("/_test/eu.systest.grpc-zk-sd/nodes" + "/" + children[0])
 
-	if string(val) != "10.0.2.100" {
-		t.Errorf("expected registered IP to be 10.0.2.100 got %v", string(val))
+	if string(val) != "10.0.2.100:41500" {
+		t.Errorf("expected registered IP to be 10.0.2.100:41500 got %v", string(val))
 		return
 	}
 }

@@ -17,10 +17,10 @@ type zkResolver struct {
 func (r *zkResolver) Build(target resolver.Target, clientConn resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
 	r.clientConn = clientConn
 
-	err != r.startWatch()
+	err := r.startWatch()
 
 	if err != nil {
-		return _, err
+		return nil, err
 	}
 
 	return r, nil
@@ -52,6 +52,8 @@ func (r *zkResolver) startWatch() error {
 			r.clientConn.UpdateState(resolver.State{Addresses: addrs})
 		}
 	}()
+
+	return nil
 }
 
 func (r *zkResolver) Scheme() string {
@@ -73,7 +75,7 @@ func (r *zkResolver) ResolveNow(opts resolver.ResolveNowOptions) {
 	r.clientConn.UpdateState(resolver.State{Addresses: addrs})
 }
 
-func (r *zkResolver) Clode() {
+func (r *zkResolver) Close() {
 	if r.cancelWatch != nil {
 		r.cancelWatch()
 		r.cancelWatch = nil

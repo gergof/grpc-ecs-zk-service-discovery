@@ -2,6 +2,7 @@ package ZookeeperServiceDiscovery
 
 import (
 	"encoding/json"
+	"fmt"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/resolver"
 	"io"
@@ -38,7 +39,7 @@ func NewEcsZkServiceDiscovery(zkServers []string, zkTimeout int, registrationPat
 	return sd, nil
 }
 
-func (sd *EcsZkDiscovery) RegisterService() error {
+func (sd *EcsZkDiscovery) RegisterService(port int) error {
 	metadataEndpoint, isEcs := os.LookupEnv("ECS_CONTAINER_METADATA_URI_V4")
 
 	if !isEcs {
@@ -94,7 +95,7 @@ func (sd *EcsZkDiscovery) RegisterService() error {
 		ip = string(b)
 	}
 
-	return sd.zk.RegisterNode(sd.path, ip)
+	return sd.zk.RegisterNode(sd.path, fmt.Sprintf("%s:%d", ip, port))
 }
 
 func (sd *EcsZkDiscovery) Unregister() {
